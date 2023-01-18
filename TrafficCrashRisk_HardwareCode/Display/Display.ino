@@ -31,20 +31,29 @@ void setup() {
 
 void loop()
 {
+  // clear old message
+  messageBuffer[bytesReceived] = '\0';
+
   bytesReceived = Serial1.readBytesUntil('@', messageBuffer, 62);
   /*
    * If messaged recieved print message data.
    */
+
   if(bytesReceived > 0)
   {
+    // erase old message
+    matrix.fillRect(0, 0, matrix.width(), matrix.height(), matrix.Color333(0, 0, 0));
+    matrix.setCursor(0, 0); 
+
+    // text color = white
     matrix.setTextColor(matrix.Color333(7,7,7));
-    //Serial.print("messaged received: ");
+
+    // send message to serial and print to matrix
     Serial.println(messageBuffer); 
     matrix.print(messageBuffer);
 
-    delay(1800);
-    matrix.fillRect(0, 0, matrix.width(), matrix.height(), matrix.Color333(0, 0, 0));
-    matrix.setCursor(0, 0); 
+    // delay 2 seconds, if no delay the no data will overwrite msg
+    delay(2000);
   }
   /*
    * If no message recieved print "No data".
