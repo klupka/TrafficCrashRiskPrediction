@@ -1,21 +1,24 @@
 /*
- * Modified exmple code from Heltec ESP32 Dev-Boards > LoRa > OLED_LoRa_Sender
- * Code for the wireless transmitter
-*/
+ * Author: Seth Klupka (dyw246).
+ * Modified example: File > Examples > Heltec ESP32 Dev-Boards > LoRa > OLED_LoRa_Transmitter.
+ * Examples require 'Heltec ESP32 Dev-Boards' by Heltec Automation library installed.
+ * Transmitter code to handle incoming data from Raspberry Pi and sending that data to reciever.
+ * Programmed to one of the ESP32s.
+ */
 
 #include "heltec.h"
 #include "images.h"
 
-/*
- * SET BAND to 915E6 for US
- */
+// LoRa frequency band for North America (915)
 #define BAND    915E6
 
+String msg;
 unsigned int counter = 0;
 String rssi = "RSSI --";
 String packSize = "--";
 String packet ;
 
+// Logo for boot screen.
 void logo()
 {
   Heltec.display->clear();
@@ -23,60 +26,71 @@ void logo()
   Heltec.display->display();
 }
 
+// Setup for boot sequence.
 void setup()
 {
-   //WIFI Kit series V1 not support Vext control
-  Heltec.begin(true /*DisplayEnable Enable*/, true /*Heltec.Heltec.Heltec.LoRa Disable*/, true /*Serial Enable*/, true /*PABOOST Enable*/, BAND /*long BAND*/);
- 
+  Heltec.begin(true, true, true, true, BAND);
   Heltec.display->init();
   Heltec.display->flipScreenVertically();  
   Heltec.display->setFont(ArialMT_Plain_10);
   logo();
   delay(1500);
   Heltec.display->clear();
-  
   Heltec.display->drawString(0, 0, "Heltec.LoRa Initial success!");
   Heltec.display->display();
   delay(1000);
 }
 
+// Main loop that reads data in Serial (written from Raspberry Pi).
 void loop()
-{
+{ 
   Heltec.display->clear();
   Heltec.display->setTextAlignment(TEXT_ALIGN_LEFT);
   Heltec.display->setFont(ArialMT_Plain_10);
+
+  // Read available data in Serial port (from Raspberry Pi).
+  readSerialPort();
   
-  Heltec.display->drawString(0, 0, "Sending packet: ");
-  Heltec.display->drawString(90, 0, String(counter));
+  String OLEDmsg = "msg: " + msg;
+  String OLEDcounter = "packet: " + String(counter);
+
+  // If message, then print to on-board OLED screen.
+  if(msg != "")
+  {
+    Heltec.display->drawString(0, 0, OLEDmsg);
+  }
+  // Else, print "msg: " to on-board OLED screen.
+  else
+    Heltec.display->drawString(0, 0, "msg: ");
+
+  // Print counter to on-board OLED screen.
+  Heltec.display->drawString(0, 50, OLEDcounter);
+  // Display everything to on-board OLED screen.
   Heltec.display->display();
-
-  // send packet
-  LoRa.beginPacket();
   
-/*
- * LoRa.setTxPower(txPower,RFOUT_pin);
- * txPower -- 0 ~ 20
- * RFOUT_pin could be RF_PACONFIG_PASELECT_PABOOST or RF_PACONFIG_PASELECT_RFO
- *   - RF_PACONFIG_PASELECT_PABOOST -- LoRa single output via PABOOST, maximum output 20dBm
- *   - RF_PACONFIG_PASELECT_RFO     -- LoRa single output via RFO_HF / RFO_LF, maximum output 14dBm
-*/
-  LoRa.setTxPower(20,RF_PACONFIG_PASELECT_PABOOST); // GUIDE SAID TO SET TO 20dBm. [Online says +30dBm is the max allowed for USA, but usually doesn't require that much power]
+  LoRa.beginPacket();
+  LoRa.setTxPower(20,RF_PACONFIG_PASELECT_PABOOST); 
 
-/*
- * Predetermined Risk Level Messages
- */
-  String message0 = "No Risk ";
-  String message1 = "Low Risk ";
-  String message2 = "Med Risk ";
-  String message3 = "High Risk ";
-  LoRa.print(message3);
-
-  LoRa.print(counter);
+  // Message sent to reciever.
+  LoRa.print(msg);
   LoRa.endPacket();
-
   counter++;
-  digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);                       // wait for a second
-  digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);                       // wait for a second
+  
+  digitalWrite(LED, HIGH);
+  delay(1000);
+  digitalWrite(LED, LOW);
+  delay(1000);  
+}
+
+// Read data in Serial port (from Raspberry Pi).
+void readSerialPort() {
+  if (Serial.available()) {
+    msg = "";
+    delay(10);
+    // While data > 0 bytes, read data.
+    while (Serial.available() > 0) {
+      msg += (char)Serial.read();
+    }
+    Serial.flush();
+   }
 }

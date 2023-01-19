@@ -1,3 +1,7 @@
+/*
+ * Unmodified header file included in example.
+ * Required for Transmitter.ino
+ */
 #define logo_width 128
 #define logo_height 53
 const unsigned char logo_bits[] = {
