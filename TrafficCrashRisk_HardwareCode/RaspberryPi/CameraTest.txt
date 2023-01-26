@@ -1,0 +1,3 @@
+Executed via terminal:
+
+libcamera-still -t 0 --afmode continuous
