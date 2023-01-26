@@ -1,1 +1,22 @@
-temp
+
+Humidity Test: SenseHat was placed ~5in above a mug of recently boiling water.
+
+	Humidity - increased quickly throughout the test reaching a peak of 90.0151 %rH at line 183.
+	Pressure - was unaffected.
+	Temperature - increased by ~6 degrees F.
+
+------------------------------------------------------------------------
+
+Pressure Test: - Is difficult to test, requires setup. See: https://github.com/raspberrypilearning/astro-pi-guide/blob/master/sensors/pressure.md
+
+------------------------------------------------------------------------
+
+Temperature Test: SenseHAT was heated from ~2.5 ft using hair dryer on low.
+
+	Humidity - dropped ~9-10% gradually throughout the test.
+	Pressure - was unaffected. 
+	Temperature - the resting temperature in room before was ~69F. Hair dryer turned off at line ~150. Temperature peaked at 85.02825F at line 155.
+	
+------------------------------------------------------------------------
+
+Light Test: Unfortunaltey, despite the sensor stating it was included, it is physically not included on this SenseHAT. Later versions do include the sensor.
