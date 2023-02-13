@@ -1,3 +1,7 @@
-Executed via terminal:
+/* 
+*  Executed via terminal to the start camera. Will open a new window with the camera output.
+*  Autofocus mode is inconsistent. Has only worked once when initially testing.
+*  The cable connected to the camera may have to be reseated to work properly.
+*/ 
 
 libcamera-still -t 0 --afmode continuous
